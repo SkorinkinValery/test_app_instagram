@@ -17,5 +17,5 @@ class PostSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ['id', 'post', 'text', 'username', 'timestamp', 'ig_comment_id']
-        read_only_fields = ['ig_comment_id', 'username', 'timestamp']
+        fields = ['id', 'post', 'message', 'username', 'timestamp']
+        read_only_fields = ['id', 'username', 'timestamp']

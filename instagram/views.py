@@ -54,5 +54,45 @@ class PostsListView(generics.ListAPIView):
     pagination_class = PostCursorPagination
 
 class CommentAddView(APIView):
-    def post(self, request):
-        pass
+    def post(self, request, post_id):
+        access_token = os.getenv('INSTAGRAM_ACCESS_TOKEN')
+
+        message = request.data.get("message")
+        if not message:
+            return Response({"error": "Message is required", "text": message}, status=400)
+
+        url = f"https://graph.instagram.com/v25.0/{post_id}/comments"
+
+        params = {
+            "message": message,
+            "access_token": access_token
+        }
+
+        response = requests.post(url, data=params)
+        data = response.json()
+
+        if "error" in data:
+            return Response({"error": data["error"]}, status=400)
+
+        comment_id = data["id"]
+
+        info_comment_url = f"https://graph.facebook.com/v25.0/{comment_id}"
+        params = {
+            "fields": "id,text,username,timestamp",
+            "access_token": access_token
+        }
+        info_comment_response = requests.get(info_comment_url, params=params)
+        info_comment_data = info_comment_response.json()
+
+        if "error" in info_comment_data:
+            return Response({"error": info_comment_data["error"]}, status=400)
+
+        serializer = CommentSerializer(data=info_comment_data)
+        if serializer.is_valid():
+            serializer.save()
+
+        return Response({
+            "status": "success",
+            "message": "Комментарий успешно добавлен",
+            "comment": info_comment_data
+        }, status=200)

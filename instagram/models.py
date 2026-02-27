@@ -20,11 +20,11 @@ class Post(models.Model):
 
 
 class Comment(models.Model):
+    id = models.CharField(max_length=50, primary_key=True)
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
-    ig_comment_id = models.CharField(max_length=50, blank=True, null=True)
-    text = models.TextField()
+    message = models.TextField()
     username = models.CharField(max_length=100, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Comment on {self.post.id}: {self.text}"
+        return f"Comment on {self.post.id}: {self.message}"
