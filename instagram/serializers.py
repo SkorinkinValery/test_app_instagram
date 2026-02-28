@@ -8,14 +8,19 @@ class PostSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def create(self, validated_data):
-        id = validated_data.pop('id')
+        post_id = validated_data.pop('id')
 
-        post = Post.objects.update_or_create(id=id, defaults=validated_data)
+        post, created = Post.objects.update_or_create(id=post_id, defaults=validated_data)
         return post
 
 
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ['id', 'post', 'message', 'username', 'timestamp']
-        read_only_fields = ['id', 'username', 'timestamp']
+        fields = '__all__'
+
+    def create(self, validated_data):
+        comment_id = validated_data.pop('id')
+
+        comment, created = Comment.objects.update_or_create(id=comment_id, defaults=validated_data)
+        return comment

@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from dotenv import load_dotenv
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -55,44 +56,43 @@ class PostsListView(generics.ListAPIView):
 
 class CommentAddView(APIView):
     def post(self, request, post_id):
+        post = get_object_or_404(Post, id=post_id)
+
         access_token = os.getenv('INSTAGRAM_ACCESS_TOKEN')
 
         message = request.data.get("message")
         if not message:
-            return Response({"error": "Message is required", "text": message}, status=400)
+            return Response({"error": "Message is required", "message": message}, status=400)
 
         url = f"https://graph.instagram.com/v25.0/{post_id}/comments"
 
-        params = {
+        data_params = {
             "message": message,
             "access_token": access_token
         }
 
-        response = requests.post(url, data=params)
+        response = requests.post(url, data=data_params)
+        if response.status_code != 200:
+            return Response({"error": "Instagram API error"}, status=400)
         data = response.json()
 
-        if "error" in data:
-            return Response({"error": data["error"]}, status=400)
-
         comment_id = data["id"]
+        if not comment_id:
+            return Response({"error": 'No comment created'}, status=400)
 
-        info_comment_url = f"https://graph.facebook.com/v25.0/{comment_id}"
-        params = {
-            "fields": "id,text,username,timestamp",
-            "access_token": access_token
-        }
-        info_comment_response = requests.get(info_comment_url, params=params)
-        info_comment_data = info_comment_response.json()
-
-        if "error" in info_comment_data:
-            return Response({"error": info_comment_data["error"]}, status=400)
-
-        serializer = CommentSerializer(data=info_comment_data)
+        serializer = CommentSerializer(data={
+            "id": comment_id,
+            "post": post,
+            "username": "me",
+            "message": message
+        })
         if serializer.is_valid():
             serializer.save()
+        else:
+            return Response({"error": serializer.errors}, status=400)
 
         return Response({
             "status": "success",
             "message": "Комментарий успешно добавлен",
-            "comment": info_comment_data
+            "comment": serializer.data
         }, status=200)
