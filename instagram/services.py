@@ -1,18 +1,22 @@
 from dotenv import load_dotenv
 import os, requests
+from typing import List, Dict, Any
 
 load_dotenv()
 
-def get_all_posts():
+def get_all_posts() -> List[Dict[str, Any]]:
+    '''Получает все посты пользователя из Instagram через Graph API'''
+
     access_token = os.getenv('INSTAGRAM_ACCESS_TOKEN')
     url = "https://graph.instagram.com/v25.0/me/media"
     params = {
-        "fields": "id,media_type,media_url,thumbnail_url,caption,timestamp,permalink,like_count,comments_count,shortcode",
+        "fields": "id,media_type,media_url,thumbnail_url,caption,timestamp,permalink,"
+                  "like_count,comments_count,shortcode",
         "limit": 50,
         "access_token": access_token
     }
 
-    all_posts = []
+    all_posts: List[Dict[str, Any]] = []
     while url:
         response = requests.get(url, params=params)
         data = response.json()
@@ -29,7 +33,9 @@ def get_all_posts():
     return all_posts
 
 
-def add_comment(post_id, message):
+def add_comment(post_id: str, message: str) -> Dict[str, Any]:
+    '''Добавляет комментарий к указанному посту Instagram через Graph API'''
+
     access_token = os.getenv('INSTAGRAM_ACCESS_TOKEN')
     url = f"https://graph.instagram.com/v25.0/{post_id}/comments"
     data_params = {
