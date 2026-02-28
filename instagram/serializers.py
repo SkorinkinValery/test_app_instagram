@@ -6,6 +6,9 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = '__all__'
+        extra_kwargs = {
+            "id": {"validators": []}
+        }
 
     def create(self, validated_data):
         post_id = validated_data.pop('id')
@@ -18,6 +21,9 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = '__all__'
+        extra_kwargs = {
+            "id": {"validators": []}
+        }
 
     def create(self, validated_data):
         comment_id = validated_data.pop('id')
