@@ -35,22 +35,33 @@
 ## Как запустить проект локально (без Docker)
 
 ### 1. Клонируйте репозиторий
+```
 git clone https://github.com/onesimpleone/Test-task-Junior-Backend.git
 cd Test-task-Junior-Backend
+```
 
 ### 2. Создайте и активируйте виртуальное окружение
+```
 python -m venv .venv
+```
 
 # Windows
+```
 .venv\Scripts\activate
+```
 
 # Linux/Mac
+```
 source .venv/bin/activate
+```
 
 ### 3. Установите зависимости
+```
 pip install -r requirements.txt
+```
 
 ### 4. Создайте файл .env в корне проекта
+```
 SECRET_KEY=ваш_секретный_ключ
 INSTAGRAM_ACCESS_TOKEN=IGAA... (ваш токен из Meta App Dashboard)
 # Настройки БД (если не используете Docker)
@@ -59,24 +70,29 @@ DB_USER=postgres
 DB_PASSWORD=postgres
 DB_HOST=127.0.0.1
 DB_PORT=5432
+```
 
 ### 5. Выполните миграции и создайте суперпользователя
+```
 python manage.py makemigrations
 python manage.py migrate
 python manage.py createsuperuser
+```
 
 ### 6. Запустите сервер
+```
 python manage.py runserver
+```
 
-Приложение будет доступно по адресу: http://127.0.0.1:8000/
+Приложение будет доступно по адресу: ```http://127.0.0.1:8000/```
 
 ---
 
 ## Запуск через Docker (рекомендуется)
-
+```
 docker-compose up --build
-
-После запуска приложение доступно на http://localhost:8000/.
+```
+После запуска приложение доступно на ```http://localhost:8000/```.
 
 ---
 
